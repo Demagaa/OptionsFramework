@@ -1,17 +1,23 @@
 package com.options;
 
 import com.parameters.Parameter;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Setter
 @Getter
 public class Option {
-    Parameter parameter;
-    String desc;
-    String[] alias;
+    private boolean argRequired;
+    private String desc;
+    private String[] alias;
+    private Parameter parameter;
+    public Option(boolean argRequired, String desc, String[] alias, Parameter parameter) {
+        this.argRequired = argRequired;
+        this.desc = desc;
+        this.alias = alias;
+        if (parameter == null){
+            throw new RuntimeException("Paramerer must be a valid class");
+        }
+        this.parameter = parameter;
+    }
 }
