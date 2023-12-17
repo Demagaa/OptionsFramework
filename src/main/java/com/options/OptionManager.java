@@ -1,12 +1,13 @@
 package com.options;
 
 import com.parameters.Integer;
+import com.parameters.MyEnum;
 import com.parameters.Parameter;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
 public class OptionManager {
@@ -38,7 +39,16 @@ public class OptionManager {
             return (T) java.lang.Integer.valueOf(arg);
         } else if (type == Boolean.class) {
             return (T) Boolean.valueOf(arg);
-// TODO        } else if (type.isEnum()) {
+        } else if (type.isEnum()) {
+            for (Object consta : type.getEnumConstants()) {
+                if (Objects.equals(consta.toString().toLowerCase(), arg.toLowerCase())) {
+                    //System.out.println("Match");
+                    return (T) consta;
+                }
+            }
+            // TODO throw exception, that value is not in enum //
+            return null;
+            //return (T) arg;
 //            Class<? extends Enum<?>> enumType = (Class<? extends Enum<?>>) type;
 //            return (T) Enum.valueOf(enumType, arg);
         } else {
@@ -50,6 +60,4 @@ public class OptionManager {
             }
         }
     }
-
-
 }

@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 @Getter
 public class Option {
+    // TODO option does not contain value of option //
     private boolean argRequired;
     private String desc;
     private String[] alias;
