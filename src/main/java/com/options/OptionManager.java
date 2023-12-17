@@ -33,9 +33,9 @@ public class OptionManager {
         Class<?> type = option.getParameter().getType();
 
         if (type == com.parameters.String.class) {
-            return (T) new com.parameters.String(type, option.getParameter().getDef(), arg);
+            return (T) arg;
         } else if (type == Integer.class) {
-            return (T) new Integer(type, option.getParameter().getDef(), java.lang.Integer.valueOf(arg));
+            return (T) java.lang.Integer.valueOf(arg);
         } else if (type == Boolean.class) {
             return (T) Boolean.valueOf(arg);
 // TODO        } else if (type.isEnum()) {

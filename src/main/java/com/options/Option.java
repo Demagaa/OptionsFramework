@@ -15,9 +15,6 @@ public class Option {
         this.argRequired = argRequired;
         this.desc = desc;
         this.alias = alias;
-        if (parameter == null){
-            throw new RuntimeException("Paramerer must be a valid class");
-        }
         this.parameter = parameter;
     }
 }

@@ -1,28 +1,23 @@
 package com.options;
 
-import com.app.TestApp;
+import com.argument.ArgumentPair;
 import com.parameters.Parameter;
-import org.junit.After;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.util.Scanner;
+import static org.junit.Assert.assertEquals;
 
 public class OptionManagerUTest {
+
     @Test
-    public void testAddOption(){
+    public void testAddOptionWithoutParameter(){
         boolean required = true;
         String desc = "my test option";
         String[] alias = {"-t", "--test", "tst"};
 
         Option option = OptionManager.createOption(required, desc, alias, null);
-        assert (option.getDesc().equals(desc));
-        assert (option.getAlias().equals(alias));
 
-        assert (option.getParameter().getType() != null);
-        assert (option.getParameter().getDef() == null);
+        assert (option.getDesc().equals(desc));
+        assert (option.getParameter() == null);
     }
 
     @Test
@@ -31,30 +26,27 @@ public class OptionManagerUTest {
         Option option = OptionManager.createOption(true, "my string option", new String[]{"-s", "--string"}, parameter);
 
         assert (option.getParameter().getDef().equals("default"));
-
     }
 
     @Test
-    @After
     public void testReadInputString(){
+        String input = "-s Hello world";
+
         Parameter parameter = OptionManager.createParameter(String.class, "default");
-        Option option = OptionManager.createOption(true, "my string option", new String[]{"-s", "--string"}, parameter);
+        Option option = OptionManager.createOption(true,
+                "my string option",
+                new String[]{"-s", "--string"},
+                parameter);
 
-        InputStream sysInBackup = System.in; // backup System.in to restore it later
-        ByteArrayInputStream in = new ByteArrayInputStream("-s Hello world".getBytes());
+        //parse argument
+        ArgumentPair argumentPair = ArgumentPair.parseArgument(input);
+        //define option
+        Option extractedOption = OptionManager.getOption(argumentPair.getArgument());
+        //get actual value
+        Object parameter1 = OptionManager.getParameter(argumentPair.getParameter(), extractedOption);
 
-        System.setIn(in);
-
-        TestApp.main(new String[]{"-s", "Hello world"});
-
-
-        System.setIn(sysInBackup);
+        assertEquals(extractedOption, option);
+        assertEquals(parameter1, argumentPair.getParameter());
     }
 
-    private String processUserInput(Scanner scanner, PrintWriter output, String answer) {
-        String input = scanner.nextLine();
-
-        output.println();
-        return input;
-    }
 }
