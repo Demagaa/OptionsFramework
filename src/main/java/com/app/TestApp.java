@@ -15,9 +15,9 @@ public class TestApp {
 
         Option option = OptionManager.getOption(args[0]);
         Object parameter = OptionManager.getParameter(args[1], option);
-        System.out.println(option);
-        System.out.println(parameter);
+
         assert parameter != null;
+
         System.out.println(parameter.getClass());
         
         //do something?

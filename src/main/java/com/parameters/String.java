@@ -1,19 +1,32 @@
 package com.parameters;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class String extends Parameter{
+        private static int maxValue = java.lang.Integer.MAX_VALUE;
 
-    private java.lang.String value;
-    public String(Class<?> type, Object def) {
-        super(type, def);
-    }
+        public static void setMinValue(int minValue) {
+            if (minValue < 0){
+                throw new IllegalArgumentException("Entered minimal length for String is below zero");
+            }
+            String.minValue = minValue;
+        }
 
-    public String(Class<?> type, Object def, java.lang.String value) {
-        this(type, def);
-        this.value = value;
-    }
+        private static int minValue = java.lang.Integer.MIN_VALUE;
 
-    @Override
-    public java.lang.String getValue() {
-        return value;
+        public String(Class<?> type, Object def) {
+            super(type, def);
+        }
+
+
+        public static java.lang.String valueOf(java.lang.String arg) {
+            int i = arg.length();
+            if (i > maxValue || i < minValue) {
+            throw new IllegalArgumentException("Entered value for String is out of specified min/max bounds");
+        }
+        return arg;
     }
 }

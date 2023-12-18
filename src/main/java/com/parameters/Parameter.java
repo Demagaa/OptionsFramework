@@ -1,17 +1,10 @@
 package com.parameters;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.Setter;
 
-@AllArgsConstructor
-@Getter
 @Setter
-public class Parameter {
-    Class<?> type;
-    Object def;
+public abstract class Parameter {
+    public abstract Class<?> getType();
 
-    public Object getValue(){
-        return null;
-    }
+    public abstract Object getDef();
 }

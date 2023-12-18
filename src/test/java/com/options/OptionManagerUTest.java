@@ -14,29 +14,42 @@ public class OptionManagerUTest {
         String desc = "my test option";
         String[] alias = {"-t", "--test", "tst"};
 
-        Option option = OptionManager.createOption(required, desc, alias, null);
+        Option option = OptionManager.createOption(required, desc, alias, null, null);
 
         assert (option.getDesc().equals(desc));
-        assert (option.getParameter() == null);
+        assert (option.getType() == null);
     }
 
     @Test
     public void testAddStringOption(){
-        Parameter parameter = OptionManager.createParameter(String.class, "default");
-        Option option = OptionManager.createOption(true, "my string option", new String[]{"-s", "--string"}, parameter);
+        Option option = OptionManager.createOption(true,
+                "my string option",
+                new String[]{"-s", "--string"},
+                String.class,
+                "default");
 
-        assert (option.getParameter().getDef().equals("default"));
+        assert (option.getType().equals(String.class));
     }
+
+    @Test
+    public void testAddIntegerOption(){
+        Option option = OptionManager.createOption(true,
+                "my int option",
+                new String[]{"-i", "--integer"},
+                Integer.class, 0);
+
+        assert (option.getType().equals(Integer.class));
+    }
+
 
     @Test
     public void testReadInputString(){
         String input = "-s Hello world";
 
-        Parameter parameter = OptionManager.createParameter(String.class, "default");
         Option option = OptionManager.createOption(true,
                 "my string option",
                 new String[]{"-s", "--string"},
-                parameter);
+                String.class, "default");
 
         //parse argument
         ArgumentPair argumentPair = ArgumentPair.parseArgument(input);
