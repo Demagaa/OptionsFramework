@@ -1,4 +1,4 @@
-package com.parameters;
+package com.options.management.parameters;
 
 public enum OtherEnum {
     TEST,

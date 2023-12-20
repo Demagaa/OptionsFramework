@@ -1,20 +1,28 @@
-package com.parameters;
+package com.options.management.parameters;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import static java.lang.Integer.parseInt;
 
 @Getter
-@Setter
-public class Integer extends Parameter{
-    private static int maxValue = java.lang.Integer.MAX_VALUE;
-    private static int minValue = java.lang.Integer.MIN_VALUE;
-    public Integer(Class<?> type, Object def) {
-        super(type, def);
+final class Integer {
+
+    static void setMaxValue(int maxValue) {
+        Integer.maxValue = maxValue;
     }
 
-    public static java.lang.Integer valueOf(java.lang.String arg) {
+    static void setMinValue(int minValue) {
+        Integer.minValue = minValue;
+    }
+
+    @Getter
+    private static int maxValue = java.lang.Integer.MAX_VALUE;
+    @Getter
+    private static int minValue = java.lang.Integer.MIN_VALUE;
+
+    private Integer(){}
+
+    static java.lang.Integer valueOf(java.lang.String arg) {
         int i = parseInt(arg, 10);
         if (i > maxValue || i < minValue) {
             throw new IllegalArgumentException("Entered value for Integer is out of specified min/max bounds");
