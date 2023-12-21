@@ -4,19 +4,24 @@ import com.options.management.parameters.OptionManager;
 
 import java.util.List;
 
-public class TestApp {
+public class CalculationApp {
     public static void main(String[] args) {
         setup();
 
-        args = new String[]{"-l", "1", "-r", "1", "-o", "MINUS", "-v"};
+        List<Object> paramsAsObjects = OptionManager.getInstance().getParamsFromInput(args);
 
+        Result result = getCalculationMembers(paramsAsObjects);
+
+        Integer mathResult = calculate(result.left, result.right, result.operator);
+        printResult(mathResult, result.left, result.right, result.operator, result.verbose);
+
+    }
+
+    private static Result getCalculationMembers(List<Object> paramsAsObjects) {
         Integer left = null;
         Integer right = null;
         OperatorEnum operator = null;
         Boolean verbose = null;
-
-
-        List<Object> paramsAsObjects = OptionManager.getInstance().getParamsFromInput(args);
 
         for (Object param : paramsAsObjects) {
             if (param instanceof Integer && left == null) {
@@ -29,10 +34,7 @@ public class TestApp {
                 verbose = (Boolean) param;
             }
         }
-
-        Integer result = calculate(left, right, operator);
-        printResult(result, left, right, operator, verbose);
-
+        return new Result(left, right, operator, verbose);
     }
 
 
@@ -77,5 +79,19 @@ public class TestApp {
         OptionManager.getInstance().createOption(true, "right operand option", new String[]{"-r"}, Integer.class, 0);
         OptionManager.getInstance().createOption(true, "operator option", new String[]{"-o"}, OperatorEnum.class, null);
         OptionManager.getInstance().createOption(false, "verbose", new String[]{"-v"}, Boolean.class, true);
+    }
+
+    private static class Result {
+        public final Integer left;
+        public final Integer right;
+        public final OperatorEnum operator;
+        public final Boolean verbose;
+
+        public Result(Integer left, Integer right, OperatorEnum operator, Boolean verbose) {
+            this.left = left;
+            this.right = right;
+            this.operator = operator;
+            this.verbose = verbose;
+        }
     }
 }
