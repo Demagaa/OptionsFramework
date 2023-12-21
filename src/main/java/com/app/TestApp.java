@@ -1,45 +1,24 @@
 package com.app;
 
-import com.options.management.parameters.OperatorEnum;
-import com.options.management.parameters.Option;
 import com.options.management.parameters.OptionManager;
+
+import java.util.List;
 
 public class TestApp {
     public static void main(String[] args) {
         setup();
 
-        args = new String[]{"-l", "5", "-r", "6", "-o", "PLUS", "-v", "false"};
+        args = new String[]{"-l", "1", "-r", "1", "-o", "MINUS", "-v"};
 
-        Result argumentsAsObjects = parseInput(args);
-
-        Integer result = calculate(argumentsAsObjects.left, argumentsAsObjects.right, argumentsAsObjects.operator);
-
-        printResult(result, argumentsAsObjects.left, argumentsAsObjects.right, argumentsAsObjects.operator, argumentsAsObjects.verbose);
-
-    }
-
-    private static Result parseInput(String[] args) {
         Integer left = null;
         Integer right = null;
         OperatorEnum operator = null;
         Boolean verbose = null;
 
-        for (int i = 0; i < args.length; i++) {
-            Option option = null;
-            try {
-                option = OptionManager.getInstance().getOption(args[i]);
-            } catch (IllegalArgumentException e) {
-                continue;
-            }
 
-            Object param = null;
-            try {
-                param = OptionManager.getInstance().interpretOption(args[i + 1], option);
-            } catch (Exception e) {
-                param = option.getDef();
-            }
+        List<Object> paramsAsObjects = OptionManager.getInstance().getParamsFromInput(args);
 
-
+        for (Object param : paramsAsObjects) {
             if (param instanceof Integer && left == null) {
                 left = (Integer) param;
             } else if (param instanceof Integer && right == null) {
@@ -50,36 +29,26 @@ public class TestApp {
                 verbose = (Boolean) param;
             }
         }
-        return new Result(left, right, operator, verbose);
-    }
 
-    private static class Result {
-        public final Integer left;
-        public final Integer right;
-        public final OperatorEnum operator;
-        public final Boolean verbose;
+        Integer result = calculate(left, right, operator);
+        printResult(result, left, right, operator, verbose);
 
-        public Result(Integer left, Integer right, OperatorEnum operator, Boolean verbose) {
-            this.left = left;
-            this.right = right;
-            this.operator = operator;
-            this.verbose = verbose;
-        }
     }
 
 
     private static void printResult(Integer result, Integer left, Integer right, OperatorEnum operator, Boolean verbose) {
-        if (verbose) {
-            System.out.println(right + " " + operator + " " + left + " = " + result);
-        } else {
-            System.out.println(result);
+        if (result != null) {
+            if (verbose != null && verbose) {
+                System.out.println(right + " " + operator + " " + left + " = " + result);
+            } else {
+                System.out.println(result);
+            }
         }
     }
 
 
     private static Integer calculate(Integer left, Integer right, OperatorEnum operator) {
         if (left == null || right == null || operator == null) {
-            System.out.println("Invalid input. Missing operand or operator.");
             return null;
         }
 
@@ -103,11 +72,10 @@ public class TestApp {
         }
     }
 
-
     private static void setup() {
         OptionManager.getInstance().createOption(true, "left operand option", new String[]{"-l"}, Integer.class, 0);
         OptionManager.getInstance().createOption(true, "right operand option", new String[]{"-r"}, Integer.class, 0);
         OptionManager.getInstance().createOption(true, "operator option", new String[]{"-o"}, OperatorEnum.class, null);
-        OptionManager.getInstance().createOption(true, "verbose", new String[]{"-v"}, Boolean.class, true);
+        OptionManager.getInstance().createOption(false, "verbose", new String[]{"-v"}, Boolean.class, true);
     }
 }

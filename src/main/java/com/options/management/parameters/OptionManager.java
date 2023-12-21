@@ -1,22 +1,26 @@
 package com.options.management.parameters;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 
 public class OptionManager {
     private static OptionManager manager;
-    private OptionManager(){
+
+    private OptionManager() {
         initReservedOptions();
     }
 
-    public static OptionManager getInstance(){
-        if (manager == null){
+    public static OptionManager getInstance() {
+        if (manager == null) {
             manager = new OptionManager();
         }
         return manager;
     }
+
     private final Map<java.lang.String, Option> optionMap = new HashMap<>();
 
     private void initReservedOptions() {
@@ -31,52 +35,53 @@ public class OptionManager {
         }
     }
 
-    public Map<java.lang.String, Option> getDefinedOptions(){
+    public Map<java.lang.String, Option> getDefinedOptions() {
         return optionMap;
     }
 
-    public void setMaxIntValue(int value){
+    public void setMaxIntValue(int value) {
         Integer.setMaxValue(value);
     }
 
-    public void setMinIntValue(int value){
+    public void setMinIntValue(int value) {
         Integer.setMinValue(value);
     }
 
-    public void setMinStringLength(int value){
+    public void setMinStringLength(int value) {
         String.setMinValue(value);
     }
 
-    public void getMinStringLength(){
+    public void getMinStringLength() {
         String.getMinValue();
     }
 
-    public void getMaxStringLength(){
+    public void getMaxStringLength() {
         String.getMaxValue();
     }
 
-    public int getMinIntValue(){
+    public int getMinIntValue() {
         return Integer.getMinValue();
     }
 
-    public int getMaxIntValue(){
+    public int getMaxIntValue() {
         return Integer.getMaxValue();
     }
 
 
-    public void setMaxStringLength(int value){
+    public void setMaxStringLength(int value) {
         String.setMaxValue(value);
     }
 
     public Option createOption(boolean argRequired,
-                                      java.lang.String desc,
-                                      java.lang.String[] alias,
-                                      Class<?> type,
-                                      Object def) {
+                               java.lang.String desc,
+                               java.lang.String[] alias,
+                               Class<?> type,
+                               Object def) {
         Option option = new Option(argRequired, desc, alias, type, def);
         putOptionInMap(alias, option);
         return option;
     }
+
     private void putOptionInMap(java.lang.String[] alias, Option option) {
         for (java.lang.String argument : alias) {
             optionMap.put(argument, option);
@@ -85,14 +90,56 @@ public class OptionManager {
 
     public Option getOption(java.lang.String code) {
         Option option = optionMap.get(code);
-        if (option == null){
+        if (option == null) {
             throw new IllegalArgumentException("no option were found for code: " + code);
         }
         return option;
     }
 
+
+    public List<Object> getParamsFromInput(java.lang.String[] args) {
+        List<Object> result = new ArrayList<>();
+        int len = args.length;
+        int i = 0;
+
+        while (i < len) {
+            Option option = getOption(args[i]);
+            if (defaultOptionUsed(option)) {
+                i++;
+            } else if (i + 1 < len) {
+                Object param;
+                if (isParamSpecified(args, i)) {
+                    param = OptionManager.getInstance().getParamOrDefault(args[++i], option);
+                } else {
+                    if (option.isArgRequired()) {
+                        throw new IllegalArgumentException("Parameter is required for option: " + args[i]);
+                    }
+                    param = option.getDef();
+                }
+                result.add(param);
+            } else if (i + 1 >= len) {
+                result.add(option.getDef());
+            }
+            i++;
+        }
+
+        return result;
+    }
+
+    private static boolean isParamSpecified(java.lang.String[] args, int i) {
+        return i + 1 < args.length && !OptionManager.getInstance().isOption(args[i + 1]);
+    }
+
+    private static boolean defaultOptionUsed(Option option) {
+        if (option.getDef() instanceof Help) {
+            OptionManager.getInstance().getParamOrDefault("", option);
+            return true;
+        }
+        return false;
+    }
+
     @SuppressWarnings("unchecked")
-    public <T> T interpretOption(java.lang.String arg, Option option) {
+    public <T> T getParamOrDefault(java.lang.String arg, Option option) {
         Class<?> type = option.getType();
 
         if (type == java.lang.String.class) {
@@ -107,7 +154,7 @@ public class OptionManager {
                     return (T) constant;
                 }
             }
-            throw new IllegalArgumentException("Specified parameter is not an " + type);
+            throw new IllegalArgumentException("Specified parameter " + arg + " is of invalid type");
         } else {
             try {
                 return (T) type.getDeclaredConstructor(java.lang.String.class).newInstance(arg);
@@ -115,4 +162,9 @@ public class OptionManager {
                 throw new IllegalArgumentException("Constructor of specified " + type + " should accept java.lang.String.class as parameter. Use decorator or add appropriate constructor");
             }
         }
-    }}
+    }
+
+    public boolean isOption(java.lang.String arg) {
+        return optionMap.containsKey(arg);
+    }
+}

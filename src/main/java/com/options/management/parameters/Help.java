@@ -4,7 +4,7 @@ import java.lang.String;
 import java.util.HashMap;
 import java.util.Map;
 
-class Help {
+final class Help {
 
     private static Map<java.lang.String, Option> optionMap;
 

@@ -1,9 +1,7 @@
 package com.options;
 
-import com.argument.ArgumentPair;
 import com.options.management.parameters.Option;
 import com.options.management.parameters.OptionManager;
-import com.options.management.parameters.MyCustomObject;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -77,12 +75,10 @@ public class OptionManagerUTest {
                 new String[]{"-s", "--string"},
                 String.class, "default");
 
-        //parse argument
-        ArgumentPair argumentPair = ArgumentPair.parseArgument(input);
         //define option
-        Option extractedOption = OptionManager.getInstance().getOption(argumentPair.getArgument());
+        Option extractedOption = OptionManager.getInstance().getOption("-s");
         //get actual value
-        Object parameter1 = OptionManager.getInstance().interpretOption(argumentPair.getParameter(), extractedOption);
+        Object parameter1 = OptionManager.getInstance().getParamOrDefault("hello", extractedOption);
 
         assertEquals(extractedOption, option);
         assert (parameter1 instanceof String);
@@ -90,44 +86,18 @@ public class OptionManagerUTest {
 
     @Test
     public void testBadReadInputList() {
-        String input = "-l new ArrayList()";
-
-        Option option = OptionManager.getInstance().createOption(true,
+        OptionManager.getInstance().createOption(true,
                 "my list option",
                 new String[]{"-l", "--list"},
                 List.class,
                 new ArrayList<>());
 
-        //parse argument
-        ArgumentPair argumentPair = ArgumentPair.parseArgument(input);
         //define option
-        Option extractedOption = OptionManager.getInstance().getOption(argumentPair.getArgument());
+        Option extractedOption = OptionManager.getInstance().getOption("-l");
         //get actual value
-
         assertThrows(IllegalArgumentException.class, () -> {
-            Object parameter1 = OptionManager.getInstance().interpretOption(argumentPair.getParameter(), extractedOption);
+            Object parameter1 = OptionManager.getInstance().getParamOrDefault("123", extractedOption);
         });
-    }
-
-    @Test
-    public void testReadCustomObject() {
-        String input = "-c myObjectProperty";
-
-        Option option = OptionManager.getInstance().createOption(true,
-                "my custom object option",
-                new String[]{"-c", "--custom"},
-                MyCustomObject.class,
-                null);
-
-        //parse argument
-        ArgumentPair argumentPair = ArgumentPair.parseArgument(input);
-        //define option
-        Option extractedOption = OptionManager.getInstance().getOption(argumentPair.getArgument());
-        //get actual value
-        Object parameter1 = OptionManager.getInstance().interpretOption(argumentPair.getParameter(), extractedOption);
-
-        assert (parameter1 instanceof MyCustomObject);
-        assert ((MyCustomObject) parameter1).arg.equals(argumentPair.getParameter());
     }
 
     @Test
@@ -139,12 +109,10 @@ public class OptionManagerUTest {
                 new String[]{"-i", "--int"},
                 Integer.class, 0);
 
-        //parse argument
-        ArgumentPair argumentPair = ArgumentPair.parseArgument(input);
         //define option
-        Option extractedOption = OptionManager.getInstance().getOption(argumentPair.getArgument());
+        Option extractedOption = OptionManager.getInstance().getOption("-i");
         //get actual value
-        Object parameter1 = OptionManager.getInstance().interpretOption(argumentPair.getParameter(), extractedOption);
+        Object parameter1 = OptionManager.getInstance().getParamOrDefault("10", extractedOption);
 
         assertEquals(extractedOption, option);
         assert (parameter1 instanceof Integer);
@@ -159,12 +127,10 @@ public class OptionManagerUTest {
                 new String[]{"-b", "--bool"},
                 Boolean.class, true);
 
-        //parse argument
-        ArgumentPair argumentPair = ArgumentPair.parseArgument(input);
         //define option
-        Option extractedOption = OptionManager.getInstance().getOption(argumentPair.getArgument());
+        Option extractedOption = OptionManager.getInstance().getOption("-b");
         //get actual value
-        Object parameter1 = OptionManager.getInstance().interpretOption(argumentPair.getParameter(), extractedOption);
+        Object parameter1 = OptionManager.getInstance().getParamOrDefault("on", extractedOption);
 
         assertEquals(extractedOption, option);
         assert (parameter1 instanceof Boolean);
@@ -179,12 +145,10 @@ public class OptionManagerUTest {
                 new String[]{"-i", "--int"},
                 Integer.class, 0);
 
-        //parse argument
-        ArgumentPair argumentPair = ArgumentPair.parseArgument(input);
         //define option
-        Option extractedOption = OptionManager.getInstance().getOption(argumentPair.getArgument());
+        Option extractedOption = OptionManager.getInstance().getOption("-i");
         assertThrows(IllegalArgumentException.class, () -> {
-            OptionManager.getInstance().interpretOption(argumentPair.getParameter(), extractedOption);
+            OptionManager.getInstance().getParamOrDefault("false", extractedOption);
         });
     }
 
@@ -196,13 +160,12 @@ public class OptionManagerUTest {
                 "my int option",
                 new String[]{"-i", "--int"},
                 Integer.class, 10);
-        //parse argument
-        ArgumentPair argumentPair = ArgumentPair.parseArgument(input);
+
         //define option
-        Option extractedOption = OptionManager.getInstance().getOption(argumentPair.getArgument());
+        Option extractedOption = OptionManager.getInstance().getOption("-i");
         assertThrows(IllegalArgumentException.class, () -> {
             //get actual value
-            OptionManager.getInstance().interpretOption(argumentPair.getParameter(), extractedOption);
+            OptionManager.getInstance().getParamOrDefault("false", extractedOption);
         });
     }
 
@@ -215,7 +178,7 @@ public class OptionManagerUTest {
                 String.class, "default");
 
         assertThrows(IllegalArgumentException.class, () -> {
-            OptionManager.getInstance().interpretOption("short", option);
+            OptionManager.getInstance().getParamOrDefault("short", option);
         });
     }
 }

@@ -23,11 +23,13 @@ final class Boolean {
         Map<java.lang.String, java.lang.Boolean> booleanMap = new HashMap<>();
 
         booleanMap.put("yes", true);
+        booleanMap.put("true", true);
         booleanMap.put("1", true);
         booleanMap.put("on", true);
         booleanMap.put("no", false);
         booleanMap.put("0", false);
         booleanMap.put("off", false);
+        booleanMap.put("false", false);
         return booleanMap;
     }
 }

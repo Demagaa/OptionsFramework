@@ -1,4 +1,4 @@
-package com.options.management.parameters;
+package com.app;
 
 public enum OperatorEnum {
     PLUS,
