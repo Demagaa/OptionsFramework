@@ -1,18 +1,17 @@
-package com.options.management.parameters;
+package com.options;
 
-import java.lang.String;
 import java.util.HashMap;
 import java.util.Map;
 
-final class Help {
+final class HelpOption {
 
-    private static Map<java.lang.String, Option> optionMap;
+    private static Map<String, Option> optionMap;
 
-    public Help(Map<java.lang.String, Option> optionMap) {
-        Help.optionMap = optionMap;
+    public HelpOption(Map<String, Option> optionMap) {
+        HelpOption.optionMap = optionMap;
     }
 
-    public Help(java.lang.String arg) {
+    public HelpOption(String arg) {
         System.out.println(getResult());
     }
 
@@ -48,9 +47,9 @@ final class Help {
     }
 
 
-    private Map<Option, java.lang.String> swapValues() {
-        HashMap<Option, java.lang.String> rev = new HashMap<>();
-        for (Map.Entry<java.lang.String, Option> entry : optionMap.entrySet())
+    private Map<Option, String> swapValues() {
+        HashMap<Option, String> rev = new HashMap<>();
+        for (Map.Entry<String, Option> entry : optionMap.entrySet())
             rev.put(entry.getValue(), entry.getKey());
         return rev;
     }

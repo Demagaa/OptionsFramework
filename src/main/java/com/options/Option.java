@@ -1,4 +1,4 @@
-package com.options.management.parameters;
+package com.options;
 
 
 import lombok.Getter;
@@ -12,12 +12,12 @@ public class Option {
     private static final Map<Class<?>, Class<?>> wrapMap = initWrapMap();
 
     private boolean argRequired;
-    private java.lang.String desc;
-    private java.lang.String[] alias;
+    private String desc;
+    private String[] alias;
     private Class<?> type;
     private Object def;
 
-    public Option(boolean argRequired, java.lang.String desc, java.lang.String[] alias, Class<?> type, Object def) {
+    public Option(boolean argRequired, String desc, String[] alias, Class<?> type, Object def) {
         if (type != null) {
             if (!type.isInstance(def) && def != null) {
                 throw new IllegalArgumentException("default value " + def + " is not of the type of parameter " + type);
@@ -53,9 +53,9 @@ public class Option {
 
     private static Map<Class<?>, Class<?>> initWrapMap() {
         Map<Class<?>, Class<?>> map = new HashMap<>();
-        map.put(com.options.management.parameters.String.class, java.lang.String.class);
-        map.put(java.lang.Integer.class, java.lang.Integer.class);
-        map.put(java.lang.Boolean.class, java.lang.Boolean.class);
+        map.put(StringOption.class, String.class);
+        map.put(IntegerOption.class, Integer.class);
+        map.put(BooleanOption.class, Boolean.class);
         return map;
     }
 }
