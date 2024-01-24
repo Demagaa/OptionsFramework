@@ -9,10 +9,11 @@ import java.util.Objects;
 
 public class OptionManager {
 
-    public OptionManager(){
+    public OptionManager() {
         optionMap = new HashMap<>();
         initReservedOptions();
     }
+
     private final Map<String, Option> optionMap;
 
     private void initReservedOptions() {
@@ -66,10 +67,10 @@ public class OptionManager {
     }
 
     public Option createOption(boolean argRequired,
-                                      String desc,
-                                      String[] alias,
-                                      Class<?> type,
-                                      Object def) {
+                               String desc,
+                               String[] alias,
+                               Class<?> type,
+                               Object def) {
         Option option = new Option(argRequired, desc, alias, type, def);
         putOptionInMap(alias, option);
         return option;
@@ -94,9 +95,11 @@ public class OptionManager {
     public List<Object> getOptionParamsAsObjectList(String[] args) {
         List<Object> result = new ArrayList<>();
 
-        for (int i = 0; i < args.length; i++) {
+        int i = 0;
+        while (i < args.length) {
             Option option = getOption(args[i]);
             if (defaultOptionUsed(option)) {
+                i++;
                 continue;
             }
 
@@ -111,9 +114,10 @@ public class OptionManager {
                     param = option.getDef();
                 }
                 result.add(param);
-            } else if (i + 1 >= args.length) {
+            } else {
                 result.add(option.getDef());
             }
+            i++;
         }
         return result;
     }
