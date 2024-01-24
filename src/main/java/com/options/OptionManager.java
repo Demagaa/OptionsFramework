@@ -8,32 +8,25 @@ import java.util.Objects;
 
 
 public class OptionManager {
-    private static OptionManager manager;
 
-    private OptionManager() {
+    public OptionManager(){
+        optionMap = new HashMap<>();
         initReservedOptions();
     }
-
-    public static OptionManager getInstance() {
-        if (manager == null) {
-            manager = new OptionManager();
-        }
-        return manager;
-    }
-
-    private final Map<String, Option> optionMap = new HashMap<>();
+    private final Map<String, Option> optionMap;
 
     private void initReservedOptions() {
-        optionMap.clear();
         Option help = createOption(false,
                 "option for listing all defined options",
                 new String[]{"-h", "--help"},
                 HelpOption.class,
                 new HelpOption(optionMap));
+
         for (String argument : help.getAlias()) {
             optionMap.put(argument, help);
         }
     }
+
 
     public Map<String, Option> getDefinedOptions() {
         return optionMap;
@@ -73,10 +66,10 @@ public class OptionManager {
     }
 
     public Option createOption(boolean argRequired,
-                               String desc,
-                               String[] alias,
-                               Class<?> type,
-                               Object def) {
+                                      String desc,
+                                      String[] alias,
+                                      Class<?> type,
+                                      Object def) {
         Option option = new Option(argRequired, desc, alias, type, def);
         putOptionInMap(alias, option);
         return option;
@@ -84,6 +77,7 @@ public class OptionManager {
 
     private void putOptionInMap(String[] alias, Option option) {
         for (String argument : alias) {
+
             optionMap.put(argument, option);
         }
     }
@@ -97,19 +91,19 @@ public class OptionManager {
     }
 
 
-    public List<Object> getParamsFromInput(String[] args) {
+    public List<Object> getOptionParamsAsObjectList(String[] args) {
         List<Object> result = new ArrayList<>();
-        int len = args.length;
-        int i = 0;
 
-        while (i < len) {
+        for (int i = 0; i < args.length; i++) {
             Option option = getOption(args[i]);
             if (defaultOptionUsed(option)) {
-                i++;
-            } else if (i + 1 < len) {
+                continue;
+            }
+
+            if (i + 1 < args.length) {
                 Object param;
                 if (isParamSpecified(args, i)) {
-                    param = OptionManager.getInstance().getParamOrDefault(args[++i], option);
+                    param = getParamOrDefault(args[++i], option);
                 } else {
                     if (option.isArgRequired()) {
                         throw new IllegalArgumentException("Parameter is required for option: " + args[i]);
@@ -117,22 +111,20 @@ public class OptionManager {
                     param = option.getDef();
                 }
                 result.add(param);
-            } else if (i + 1 >= len) {
+            } else if (i + 1 >= args.length) {
                 result.add(option.getDef());
             }
-            i++;
         }
-
         return result;
     }
 
-    private static boolean isParamSpecified(String[] args, int i) {
-        return i + 1 < args.length && !OptionManager.getInstance().isOption(args[i + 1]);
+    private boolean isParamSpecified(String[] args, int i) {
+        return i + 1 < args.length && !isOption(args[i + 1]);
     }
 
-    private static boolean defaultOptionUsed(Option option) {
+    private boolean defaultOptionUsed(Option option) {
         if (option.getDef() instanceof HelpOption) {
-            OptionManager.getInstance().getParamOrDefault("", option);
+            getParamOrDefault("", option);
             return true;
         }
         return false;
