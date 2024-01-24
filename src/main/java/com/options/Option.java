@@ -54,8 +54,8 @@ public class Option {
     private static Map<Class<?>, Class<?>> initWrapMap() {
         Map<Class<?>, Class<?>> map = new HashMap<>();
         map.put(StringOption.class, String.class);
-        map.put(Integer.class, Integer.class);
-        map.put(Boolean.class, Boolean.class);
+        map.put(IntegerOption.class, Integer.class);
+        map.put(BooleanOption.class, Boolean.class);
         return map;
     }
 }

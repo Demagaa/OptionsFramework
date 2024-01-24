@@ -1,6 +1,6 @@
 package com.app;
 
-import com.options.management.parameters.OptionManager;
+import com.options.OptionManager;
 
 import java.util.List;
 
@@ -75,6 +75,8 @@ public class CalculationApp {
     }
 
     private static void setup() {
+        OptionManager.getInstance().setMaxIntValue(100);
+        OptionManager.getInstance().setMinIntValue(10);
         OptionManager.getInstance().createOption(true, "left operand option", new String[]{"-l"}, Integer.class, 0);
         OptionManager.getInstance().createOption(true, "right operand option", new String[]{"-r"}, Integer.class, 0);
         OptionManager.getInstance().createOption(true, "operator option", new String[]{"-o"}, OperatorEnum.class, null);
