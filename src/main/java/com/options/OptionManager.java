@@ -1,4 +1,4 @@
-package com.options.management.parameters;
+package com.options;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,60 +21,60 @@ public class OptionManager {
         return manager;
     }
 
-    private final Map<java.lang.String, Option> optionMap = new HashMap<>();
+    private final Map<String, Option> optionMap = new HashMap<>();
 
     private void initReservedOptions() {
         optionMap.clear();
         Option help = createOption(false,
                 "option for listing all defined options",
-                new java.lang.String[]{"-h", "--help"},
-                Help.class,
-                new Help(optionMap));
-        for (java.lang.String argument : help.getAlias()) {
+                new String[]{"-h", "--help"},
+                HelpOption.class,
+                new HelpOption(optionMap));
+        for (String argument : help.getAlias()) {
             optionMap.put(argument, help);
         }
     }
 
-    public Map<java.lang.String, Option> getDefinedOptions() {
+    public Map<String, Option> getDefinedOptions() {
         return optionMap;
     }
 
     public void setMaxIntValue(int value) {
-        Integer.setMaxValue(value);
+        IntegerOption.setMaxValue(value);
     }
 
     public void setMinIntValue(int value) {
-        Integer.setMinValue(value);
+        IntegerOption.setMinValue(value);
     }
 
     public void setMinStringLength(int value) {
-        String.setMinValue(value);
+        StringOption.setMinValue(value);
     }
 
     public void getMinStringLength() {
-        String.getMinValue();
+        StringOption.getMinValue();
     }
 
     public void getMaxStringLength() {
-        String.getMaxValue();
+        StringOption.getMaxValue();
     }
 
     public int getMinIntValue() {
-        return Integer.getMinValue();
+        return IntegerOption.getMinValue();
     }
 
     public int getMaxIntValue() {
-        return Integer.getMaxValue();
+        return IntegerOption.getMaxValue();
     }
 
 
     public void setMaxStringLength(int value) {
-        String.setMaxValue(value);
+        StringOption.setMaxValue(value);
     }
 
     public Option createOption(boolean argRequired,
-                               java.lang.String desc,
-                               java.lang.String[] alias,
+                               String desc,
+                               String[] alias,
                                Class<?> type,
                                Object def) {
         Option option = new Option(argRequired, desc, alias, type, def);
@@ -82,13 +82,13 @@ public class OptionManager {
         return option;
     }
 
-    private void putOptionInMap(java.lang.String[] alias, Option option) {
-        for (java.lang.String argument : alias) {
+    private void putOptionInMap(String[] alias, Option option) {
+        for (String argument : alias) {
             optionMap.put(argument, option);
         }
     }
 
-    public Option getOption(java.lang.String code) {
+    public Option getOption(String code) {
         Option option = optionMap.get(code);
         if (option == null) {
             throw new IllegalArgumentException("no option were found for code: " + code);
@@ -97,7 +97,7 @@ public class OptionManager {
     }
 
 
-    public List<Object> getParamsFromInput(java.lang.String[] args) {
+    public List<Object> getParamsFromInput(String[] args) {
         List<Object> result = new ArrayList<>();
         int len = args.length;
         int i = 0;
@@ -126,12 +126,12 @@ public class OptionManager {
         return result;
     }
 
-    private static boolean isParamSpecified(java.lang.String[] args, int i) {
+    private static boolean isParamSpecified(String[] args, int i) {
         return i + 1 < args.length && !OptionManager.getInstance().isOption(args[i + 1]);
     }
 
     private static boolean defaultOptionUsed(Option option) {
-        if (option.getDef() instanceof Help) {
+        if (option.getDef() instanceof HelpOption) {
             OptionManager.getInstance().getParamOrDefault("", option);
             return true;
         }
@@ -139,15 +139,15 @@ public class OptionManager {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getParamOrDefault(java.lang.String arg, Option option) {
+    public <T> T getParamOrDefault(String arg, Option option) {
         Class<?> type = option.getType();
 
-        if (type == java.lang.String.class) {
-            return (T) com.options.management.parameters.String.valueOf(arg);
-        } else if (type == java.lang.Integer.class) {
-            return (T) com.options.management.parameters.Integer.valueOf(arg);
-        } else if (type == java.lang.Boolean.class) {
-            return (T) com.options.management.parameters.Boolean.valueOf(arg);
+        if (type == String.class) {
+            return (T) StringOption.valueOf(arg);
+        } else if (type == Integer.class) {
+            return (T) IntegerOption.valueOf(arg);
+        } else if (type == Boolean.class) {
+            return (T) BooleanOption.valueOf(arg);
         } else if (type.isEnum()) {
             for (Object constant : type.getEnumConstants()) {
                 if (Objects.equals(constant.toString().toLowerCase(), arg.toLowerCase())) {
@@ -157,14 +157,14 @@ public class OptionManager {
             throw new IllegalArgumentException("Specified parameter " + arg + " is of invalid type");
         } else {
             try {
-                return (T) type.getDeclaredConstructor(java.lang.String.class).newInstance(arg);
+                return (T) type.getDeclaredConstructor(String.class).newInstance(arg);
             } catch (Exception e) {
                 throw new IllegalArgumentException("Constructor of specified " + type + " should accept java.lang.String.class as parameter. Use decorator or add appropriate constructor");
             }
         }
     }
 
-    public boolean isOption(java.lang.String arg) {
+    public boolean isOption(String arg) {
         return optionMap.containsKey(arg);
     }
 }
